@@ -1,5 +1,5 @@
-﻿using Application.Services;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 
@@ -9,17 +9,17 @@ namespace WebAPI.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly SubjectService _subjectService;
+        private readonly IRepositoryManager _repositoryManager;
 
-        public StudentController(SubjectService subjectService)
+        public StudentController(IRepositoryManager repositoryManager)
         {
-            _subjectService = subjectService;
+            _repositoryManager = repositoryManager;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IQueryable<Subject>>> GetUsers()
+        public async Task<ActionResult<IQueryable<Student>>> GetUsers()
         {
-            var users = await _subjectService.GetAllSubjectsAsync();
+            var users = await _repositoryManager.StudentRepositry.GetAllAsync();
             return Ok(users); 
         }
 
@@ -37,16 +37,45 @@ namespace WebAPI.Controllers
                 hours = subject.hours,
                 grade = subject.grade
             };
-            await _subjectService.AddSubjectAsync(subjectEntity);
+            await _repositoryManager.SubjectRepositry.AddAsync(subjectEntity);
+            _repositoryManager.Save();
             return Ok(subjectEntity);
         }
 
-        [HttpPost("Update")]
+        [HttpPost("Condition")]
         public async Task<ActionResult> ByCondition([FromBody] SubjectDTO subject)
         {
-           var result = await _subjectService.GetSubjectByCondition(x => x.course_Name == subject.course_Name);
-           
+           var result = await _repositoryManager.SubjectRepositry.GetByConditionAsync(x => x.course_Name == subject.course_Name);
             return Ok(result);
         }
+
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update(string name, string id )
+        {
+            var subject = new Subject
+            {
+                Id= id,
+                course_Name = name
+            };
+            await _repositoryManager.SubjectRepositry.UpdateAsync(subject);
+            _repositoryManager.Save();
+            return Ok(subject);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var subject = await _repositoryManager.StudentRepositry.GetByConditionAsync(x => x.Id == int.Parse(id)); 
+            if (subject == null || !subject.Any()) 
+            {
+                return NotFound();
+            }
+
+            var subjectToDelete = subject.FirstOrDefault(); 
+            await _repositoryManager.StudentRepositry.DeleteAsync(subjectToDelete!);
+            _repositoryManager.Save();
+            return NoContent();  
+        }
+
     }
 }

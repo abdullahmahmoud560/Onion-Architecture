@@ -8,13 +8,18 @@ namespace Infrastructure.ApplicationDbContext
     {
         public DB CreateDbContext(string[] args)
         {
+            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "WebAPI");
+
             var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+                .SetBasePath(basePath)
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
             var builder = new DbContextOptionsBuilder<DB>()
-            .UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                 .UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+                     options => options.MigrationsAssembly("Infrastructure"));
             return new DB(builder.Options);
+
         }
     }
 }

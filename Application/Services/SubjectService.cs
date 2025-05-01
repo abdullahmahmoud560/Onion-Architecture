@@ -1,45 +1,18 @@
 ﻿
 
-using Domain.Entities;
+using Application.Interfaces;
 using Domain.Interfaces;
 
 namespace Application.Services
 {
-    public class SubjectService
+    public sealed class SubjectService : ISubjectService
     {
-        private readonly ISubjectRepositry _subjectRepository;
+        private readonly IRepositoryManager _repositoryManager;
 
-        public SubjectService(ISubjectRepositry subjectRepository)
+        public SubjectService(IRepositoryManager repositoryManager)
         {
-            _subjectRepository = subjectRepository;
+            _repositoryManager = repositoryManager;
         }
-        public async Task<List<Subject>> GetAllSubjectsAsync()
-        {
-            return (await _subjectRepository.GetAllAsync()).ToList();
-        }
-        public async Task<Subject> GetSubjectByCondition(Func<Subject , bool> func)
-        {
-            var result = await _subjectRepository.GetByConditionAsync(func);
-            if (result != null)
-            {
-                return result;
-            }
-            throw new Exception("Subject not found");
-        }
-
-        public async Task AddSubjectAsync(Subject subject)
-        {
-            await _subjectRepository.AddAsync(subject);
-        }
-
-        public async Task UpdateAsync(Subject subject)
-        {
-            await _subjectRepository.UpdateAsync(subject);
-        }
-        public async Task DeleteSubject(Guid  id)
-        {
-            await _subjectRepository.DeleteAsync(id);
-        }
-
+      
     }
 }
