@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using AutoMapper;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -8,11 +9,11 @@ namespace Application.Services
         private readonly Lazy<IStudentService> _studentService;
         private readonly Lazy<ISubjectService> _subjectService;
         private readonly Lazy<IStudentSubjectService> _studentSubjectService;
-        public ServiceManager(IRepositoryManager repository)
+        public ServiceManager(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
         {
-            _studentService = new Lazy<IStudentService>(() => new StudentService(repository));
-            _subjectService = new Lazy<ISubjectService>(() => new SubjectService(repository));
-            _studentSubjectService = new Lazy<IStudentSubjectService>(() => new StudentSubjectService(repository));
+            _studentService = new Lazy<IStudentService>(() => new StudentService(repository ,mapper, logger));
+            _subjectService = new Lazy<ISubjectService>(() => new SubjectService(repository,logger));
+            _studentSubjectService = new Lazy<IStudentSubjectService>(() => new StudentSubjectService(repository, logger));
         }
 
         public IStudentService StudentService => _studentService.Value;

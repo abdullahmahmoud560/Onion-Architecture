@@ -2,7 +2,10 @@
 
 namespace Domain.Interfaces
 {
-    public interface IStudentRepositry : IRepositryBase<Student>
+    public interface IStudentRepositry
     {
+        IEnumerable<Student> GetAllStudents();
+        Student GetStudent(int companyId);
+
     }
 }

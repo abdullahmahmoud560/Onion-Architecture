@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
 
         public async Task<IQueryable<T>> GetByConditionAsync(Expression<Func<T, bool>> func)
         {
-            return await Task.FromResult(_db.Set<T>().Where(func)); // مع تتبع التغييرات
+            return await Task.FromResult(_db.Set<T>().Where(func));
         }
 
 
